@@ -373,6 +373,12 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
             }
             if (rank == MASTER_RANK) {
                 std::cout << "Stage 3aa" << std::endl;
+                for (int i = 0; i < world_size; ++i) {
+                    for (int j = 0; j < n; ++j) {
+                        std::cout << parents[i][j];
+                    }
+                    std::cout << std::endl;
+                }
             }
             // Modify the adjacency matrix - add the best flow
             for (Vertex v = t; v != s; v = parents[maxp][v]) {
