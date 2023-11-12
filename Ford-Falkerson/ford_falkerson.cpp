@@ -301,6 +301,12 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
         // Try to find path to the sink and calculate the flow
         loop = bfs();
         if (rank == MASTER_RANK) {
+            for (int j = 0; j < n; ++j) {
+                std::cout << parent[j] << ' ';
+            }
+        }
+
+        if (rank == MASTER_RANK) {
             std::cout << "Stage 2a" << std::endl;
         }
         int path_flow_temp = 0;
