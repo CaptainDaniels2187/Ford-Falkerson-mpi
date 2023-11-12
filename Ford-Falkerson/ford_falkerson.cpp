@@ -359,7 +359,7 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
 
         if (rank == MASTER_RANK) {
             std::cout << "Stage 2d" << std::endl;
-            for (int j = 0; j < n; ++j) {
+            for (int j = 0; j < n * world_size; ++j) {
                 std::cout << respath[j] << ' ';
             }
             std::cout << std::endl;
@@ -370,7 +370,7 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
             std::vector<path_t> parents(world_size);
             for (int i = 0; i < world_size; ++i) {
                 path_t temp(n);
-                std::copy(respath.begin() + i * n, respath.begin() + (i + 1) * n - 1, temp.begin());
+                std::copy(respath.begin() + i * n, respath.begin() + (i + 1) * n, temp.begin());
                 for (int j = 0; j < n; ++j) {
                     std::cout << temp[j] << ' ';
                 }
