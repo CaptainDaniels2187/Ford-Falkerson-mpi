@@ -3,6 +3,7 @@
 
 using namespace graphs;
 
+#include <iomanip>
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
@@ -19,6 +20,7 @@ template<typename T>
 std::ostream& operator<<(std::ostream& os, const std::vector<std::vector<T>>& g) {
     for (const auto& row : g) {
         for (const auto& elem : row) {
+            os.width(2);
             os << elem << ' ';
         }
         os << '\n';
@@ -50,6 +52,12 @@ int main() {
 
     adjacency_matrix<> graph;
 
+    if (nVertexes < 2) {
+        if (rank == MASTER_RANK) {
+            std::cout << "Not enough vertexes (< 2)";
+        }
+        return 0;
+    }
     // Random input(safe)
     if (rank == MASTER_RANK) {
         graph = generate(nVertexes, gen);
@@ -62,7 +70,7 @@ int main() {
         std::cout << "Eneter the adjacency matrix:\n";
         std::cin >> graph;
     }*/
-
+    
     // Transmit adjacency matrix to other nodes
     for (int i = 0; i < nVertexes; ++i)
     {
@@ -74,10 +82,6 @@ int main() {
         if (rank != MASTER_RANK) {
             graph.push_back(row);
         }
-    }
-
-    if (rank == MASTER_RANK) {
-        std::cout << "Stage 1" << std::endl;
     }
 
     // Add suoersourse and supersink

@@ -235,9 +235,6 @@ flow_graph_t graphs::add_supersource_supersink(const adjacency_matrix<>& capacit
 flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int rank, int world_size) {
     const auto s = g.source;
     const auto t = g.sink;
-    if (rank == MASTER_RANK) {
-        std::cout << s << ' ' << t << std::endl;
-    }
 
     auto capacity = g.capacity;
     const auto n = g.capacity.size();
@@ -303,16 +300,6 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
     while (loop) {
         // Try to find path to the sink and calculate the flow
         loop = bfs();
-        if (rank == MASTER_RANK) {
-            for (int j = 0; j < n; ++j) {
-                std::cout << parent[j] << ' ';
-            }
-            std::cout << std::endl;
-        }
-
-        if (rank == MASTER_RANK) {
-            std::cout << "Stage 2a" << std::endl;
-        }
         int path_flow_temp = 0;
         if (loop) {
             path_flow_temp = INF;
@@ -327,9 +314,6 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
             path_flows.resize(world_size);
         }
         MPI::COMM_WORLD.Gather(&path_flow_temp, 1, MPI::INT, path_flows.data(), 1, MPI::INT, MASTER_RANK);
-        if (rank == MASTER_RANK) {
-            std::cout << "Stage 2b" << std::endl;
-        }
 
         std::vector<int> res;
         if (rank == MASTER_RANK) {
@@ -344,9 +328,7 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
                 loop |= p;
             }
         }
-        if (rank == MASTER_RANK) {
-            std::cout << "Stage 2c" << std::endl;
-        }
+
         // Transmit the exist path to the stick statement to other nodes
         MPI::COMM_WORLD.Bcast(&loop, 1, MPI::INT, MASTER_RANK);
 
@@ -358,13 +340,6 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
         MPI::COMM_WORLD.Gather(parent.data(), n, MPI::UNSIGNED_LONG, respath.data(), n, MPI::UNSIGNED_LONG, MASTER_RANK);
 
         if (rank == MASTER_RANK) {
-            std::cout << "Stage 2d" << std::endl;
-            for (int j = 0; j < n * world_size; ++j) {
-                std::cout << respath[j] << ' ';
-            }
-            std::cout << std::endl;
-        }
-        if (rank == MASTER_RANK) {
             int path_flow = 0;
             // Parsing the recive paths
             std::vector<path_t> parents;
@@ -372,16 +347,8 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
                 path_t temp(n);
                 std::copy(respath.begin() + i * n, respath.begin() + (i + 1) * n, temp.begin());
                 parents.push_back(temp);
-                for (int j = 0; j < n; ++j) {
-                    std::cout << parents.size() << ' ';
-                }
-                std::cout << std::endl;
-              
             }
-            if (rank == MASTER_RANK) {
-                std::cout << "Stage 3a" << std::endl;
-                std::cout << path_flows.data() << std::endl;
-            }
+
             // Calculate max flow in the recived paths
             int maxp = 0;
             for (int i = 0; i < world_size; ++i) {           
@@ -390,9 +357,7 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
                     maxp = i;
                 }
             }
-            if (rank == MASTER_RANK) {
-                std::cout << "Stage 3aa" << std::endl;
-            }
+
             // Modify the adjacency matrix - add the best flow
             for (Vertex v = t; v != s; v = parents[maxp][v]) {
                 Vertex u = parents[maxp][v];
@@ -401,9 +366,6 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
                 result.flow[u][v] += path_flow;
             }
             result.max_flow += path_flow;
-            if (rank == MASTER_RANK) {
-                std::cout << "Stage 3b" << std::endl;
-            }
         }
         
         // Transmit the modified adjacency matrix to the other nodes
@@ -417,9 +379,6 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
             if (rank != MASTER_RANK) {
                 std::copy(row.begin(), row.end(), capacity[i].begin());
             }
-        }
-        if (rank == MASTER_RANK) {
-            std::cout << "Stage 3c" << std::endl;
         }
     }
     return result;
