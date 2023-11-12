@@ -367,7 +367,7 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
         if (rank == MASTER_RANK) {
             int path_flow = 0;
             // Parsing the recive paths
-            std::vector<path_t> parents(world_size);
+            std::vector<path_t> parents;
             for (int i = 0; i < world_size; ++i) {
                 path_t temp(n);
                 std::copy(respath.begin() + i * n, respath.begin() + (i + 1) * n, temp.begin());
