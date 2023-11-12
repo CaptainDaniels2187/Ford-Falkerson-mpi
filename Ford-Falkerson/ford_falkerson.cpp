@@ -361,6 +361,7 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
             }
             if (rank == MASTER_RANK) {
                 std::cout << "Stage 3a" << std::endl;
+                std::cout << path_flows.data() << std::endl;
             }
             // Calculate max flow in the recived paths
             int maxp = 0;
@@ -370,7 +371,9 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
                     maxp = i;
                 }
             }
-            
+            if (rank == MASTER_RANK) {
+                std::cout << "Stage 3aa" << std::endl;
+            }
             // Modify the adjacency matrix - add the best flow
             for (Vertex v = t; v != s; v = parents[maxp][v]) {
                 Vertex u = parents[maxp][v];

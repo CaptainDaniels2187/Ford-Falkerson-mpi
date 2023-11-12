@@ -11,7 +11,7 @@ namespace graphs {
     template<typename T = int>
     using adjacency_matrix = std::vector<std::vector<T>>;
 
-    using Vertex = size_t;
+    using Vertex = unsigned long;
 
     using path_t = std::vector<Vertex>;
 
