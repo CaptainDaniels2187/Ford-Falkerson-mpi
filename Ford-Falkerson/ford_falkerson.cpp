@@ -373,7 +373,7 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
                 std::copy(respath.begin() + i * n, respath.begin() + (i + 1) * n, temp.begin());
                 parents.push_back(temp);
                 for (int j = 0; j < n; ++j) {
-                    std::cout << parents[j][0] << ' ';
+                    std::cout << parents.size() << ' ';
                 }
                 std::cout << std::endl;
               
