@@ -371,11 +371,12 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
             for (int i = 0; i < world_size; ++i) {
                 path_t temp(n);
                 std::copy(respath.begin() + i * n, respath.begin() + (i + 1) * n, temp.begin());
+                parents.push_back(temp);
                 for (int j = 0; j < n; ++j) {
-                    std::cout << temp[j] << ' ';
+                    std::cout << parents[j][0] << ' ';
                 }
                 std::cout << std::endl;
-                parents.push_back(temp);
+              
             }
             if (rank == MASTER_RANK) {
                 std::cout << "Stage 3a" << std::endl;
