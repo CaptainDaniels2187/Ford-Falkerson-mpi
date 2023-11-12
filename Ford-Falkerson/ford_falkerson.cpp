@@ -9,6 +9,8 @@
 #include "mpi.h"
 using namespace graphs;
 
+int MASTER_RANK = 0;
+
 // start snippet mpi-generate
 //adjacency_matrix<> graphs::generate(size_t nVertices, int rank, int world_size, std::mt19937& gen) {
 //    int subsize;
@@ -312,7 +314,7 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
         }
         MPI::COMM_WORLD.Gather(&path_flow_temp, 1, MPI::INT, path_flows.data(), 1, MPI::INT, MASTER_RANK);
 
-        std::vector<bool> res;
+        std::vector<int> res;
         if (rank == MASTER_RANK) {
             res.resize(world_size);
         }
@@ -333,7 +335,7 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
         if (rank == MASTER_RANK) {
             respath.resize(world_size * n);
         }
-        MPI::COMM_WORLD.Gather(parent.data(), n, MPI::UNSIGNED_INT, respath.data(), n, MPI::UNSIGNED_INT, MASTER_RANK);
+        MPI::COMM_WORLD.Gather(parent.data(), n, MPI::UNSIGNED_LONG, respath.data(), n, MPI::UNSIGNED_LONG, MASTER_RANK);
 
         if (rank == MASTER_RANK) {
             int path_flow = 0;
