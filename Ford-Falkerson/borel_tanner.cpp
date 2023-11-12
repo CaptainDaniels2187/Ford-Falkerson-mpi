@@ -13,8 +13,8 @@ void test_borel() {
     for (int n = 0; n < 1e5; ++n)
         ++map[dis(gen)];
 
-    for(const auto& [num, count] : map)
-        std::cout << num << "\t" << count << "\n";
+    for(const auto& pair : map)
+        std::cout << pair.first << "\t" << pair.second << "\n";
 }
 
 // start snippet borel_histograms

@@ -52,6 +52,6 @@ namespace graphs {
 
     // find maximim flow of given capacities matrix. Ignores g.cost.
     // найти максимальный поток по данной матрице пропускных способностей (игнорируя стоимости).
-    flow_result_t max_flow_ford_fulkerson(const flow_graph_t& g);
+    flow_result_t mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int rank, int world_size);
 }
 
