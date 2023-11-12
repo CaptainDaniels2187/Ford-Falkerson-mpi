@@ -1,4 +1,5 @@
 #include "ford_falkerson.h"
+#include <iostream>
 #include <algorithm>
 #include <cassert>
 #include <queue>
@@ -299,6 +300,9 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
     while (loop) {
         // Try to find path to the sink and calculate the flow
         loop = bfs();
+        if (rank == MASTER_RANK) {
+            std::cout << "Stage 2a" << std::endl;
+        }
         int path_flow_temp = 0;
         if (loop) {
             path_flow_temp = INF;
@@ -313,6 +317,9 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
             path_flows.resize(world_size);
         }
         MPI::COMM_WORLD.Gather(&path_flow_temp, 1, MPI::INT, path_flows.data(), 1, MPI::INT, MASTER_RANK);
+        if (rank == MASTER_RANK) {
+            std::cout << "Stage 2b" << std::endl;
+        }
 
         std::vector<int> res;
         if (rank == MASTER_RANK) {
@@ -327,6 +334,9 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
                 loop |= p;
             }
         }
+        if (rank == MASTER_RANK) {
+            std::cout << "Stage 2c" << std::endl;
+        }
         // Transmit the exist path to the stick statement to other nodes
         MPI::COMM_WORLD.Bcast(&loop, 1, MPI::INT, MASTER_RANK);
 
@@ -338,6 +348,9 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
         MPI::COMM_WORLD.Gather(parent.data(), n, MPI::UNSIGNED_LONG, respath.data(), n, MPI::UNSIGNED_LONG, MASTER_RANK);
 
         if (rank == MASTER_RANK) {
+            std::cout << "Stage 2d" << std::endl;
+        }
+        if (rank == MASTER_RANK) {
             int path_flow = 0;
             // Parsing the recive paths
             std::vector<path_t> parents(world_size);
@@ -346,7 +359,9 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
                 std::copy(respath.begin() + i * n, respath.begin() + (i + 1) * n - 1, temp.begin());
                 parents.push_back(temp);
             }
-
+            if (rank == MASTER_RANK) {
+                std::cout << "Stage 3a" << std::endl;
+            }
             // Calculate max flow in the recived paths
             int maxp = 0;
             for (int i = 0; i < world_size; ++i) {           
@@ -364,6 +379,9 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
                 result.flow[u][v] += path_flow;
             }
             result.max_flow += path_flow;
+            if (rank == MASTER_RANK) {
+                std::cout << "Stage 3b" << std::endl;
+            }
         }
         
         // Transmit the modified adjacency matrix to the other nodes
@@ -378,7 +396,9 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
                 std::copy(row.begin(), row.end(), capacity[i].begin());
             }
         }
-
+        if (rank == MASTER_RANK) {
+            std::cout << "Stage 3c" << std::endl;
+        }
     }
     return result;
 }

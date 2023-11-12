@@ -76,6 +76,10 @@ int main() {
         }
     }
 
+    if (rank == MASTER_RANK) {
+        std::cout << "Stage 1" << std::endl;
+    }
+
     // Add suoersourse and supersink
     flow_graph_t flowgraph = add_supersource_supersink(graph);
 
