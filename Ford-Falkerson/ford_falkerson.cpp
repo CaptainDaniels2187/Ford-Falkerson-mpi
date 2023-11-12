@@ -235,6 +235,9 @@ flow_graph_t graphs::add_supersource_supersink(const adjacency_matrix<>& capacit
 flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int rank, int world_size) {
     const auto s = g.source;
     const auto t = g.sink;
+    if (rank == MASTER_RANK) {
+        std::cout << s << ' ' << t << std::endl;
+    }
 
     auto capacity = g.capacity;
     const auto n = g.capacity.size();
@@ -304,6 +307,7 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
             for (int j = 0; j < n; ++j) {
                 std::cout << parent[j] << ' ';
             }
+            std::cout << std::endl;
         }
 
         if (rank == MASTER_RANK) {
@@ -355,6 +359,10 @@ flow_result_t graphs::mpi_max_flow_ford_fulkerson(const flow_graph_t& g, int ran
 
         if (rank == MASTER_RANK) {
             std::cout << "Stage 2d" << std::endl;
+            for (int j = 0; j < n; ++j) {
+                std::cout << respath[j] << ' ';
+            }
+            std::cout << std::endl;
         }
         if (rank == MASTER_RANK) {
             int path_flow = 0;
