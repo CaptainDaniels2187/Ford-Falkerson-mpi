@@ -13,7 +13,7 @@ using namespace graphs;
 
 std::mt19937 gen{ std::random_device{}() };
 
-#define MASTER_RANK 0;
+#define MASTER_RANK 0
 
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const std::vector<std::vector<T>>& g) {

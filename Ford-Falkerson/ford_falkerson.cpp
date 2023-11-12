@@ -9,7 +9,7 @@
 #include "mpi.h"
 using namespace graphs;
 
-#define MASTER_RANK 0;
+#define MASTER_RANK 0
 
 // start snippet mpi-generate
 //adjacency_matrix<> graphs::generate(size_t nVertices, int rank, int world_size, std::mt19937& gen) {
